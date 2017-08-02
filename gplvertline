@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+
+echo set arrow $1 from $2,GPVAL_Y_MIN to $2,GPVAL_Y_MAX nohead $3

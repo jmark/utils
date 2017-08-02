@@ -1,0 +1,1 @@
+start http://192.168.2.1/cgi-bin/disconnect.exe

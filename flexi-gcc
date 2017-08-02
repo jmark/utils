@@ -1,0 +1,9 @@
+#!/bin/sh
+
+export PROJECT_DIR="${HOME}/data/projects/stirturb"
+export HOPR_BIN_DIR="${PROJECT_DIR}/hopr/bin"
+export FLEXI_BIN_DIR="${PROJECT_DIR}/flexi/build-gcc/bin"
+
+export PATH="${HOPR_BIN_DIR}:${FLEXI_BIN_DIR}:${PATH}"
+
+env $@

@@ -1,0 +1,37 @@
+#!/usr/bin/bash
+
+echo "## Fetching mails..."
+#~/data/scripts/procmail.pl
+
+FETCH=$HOME/projects/Werkzeugkasten/fuckmail/fetch.pl
+IMAP=$HOME/projects/Werkzeugkasten/fuckmail/imap.pl
+CONF=$HOME/keys/pop3/
+
+echo '[gmail]'
+$FETCH $CONF/gmail.ini
+
+echo '[astro]'
+$FETCH $CONF/astro.ini
+
+echo '[math]'
+$IMAP $CONF/mi.ini
+
+echo '[smail]'
+$FETCH $CONF/smail.ini
+
+#echo '[unimail]'
+#$FETCH $CONF/unimail.ini
+
+echo '[one]'
+$FETCH $CONF/one.ini
+
+echo '[lists]'
+$FETCH $CONF/lists.ini
+
+echo
+echo '## Filtering mails ...'
+~/projects/Werkzeugkasten/fuckmail/filter.pl ~/mail/inbox/ ~/mail/ ~/.config/mail-filter-rules.txt
+
+echo
+echo "## Checking RSS..."
+~/scripts/rss.pl

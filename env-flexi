@@ -1,0 +1,21 @@
+#!/bin/sh
+
+PROJECT_DIR="${HOME}/data/projects/stirturb"
+HOPR_BIN_DIR="${PROJECT_DIR}/hopr/bin"
+
+VENDOR="$1"
+shift
+
+case "$VENDOR" in
+    gcc)
+        export FLEXI_BIN_DIR="${PROJECT_DIR}/flexi/build-gcc/bin"
+        ;;
+    intel)
+        export FLEXI_BIN_DIR="${PROJECT_DIR}/flexi/build-intel/bin"
+        source ~/compiler-envs.exports
+        ;;
+esac
+
+export PATH="${HOPR_BIN_DIR}:${FLEXI_BIN_DIR}:${PATH}"
+
+env $@

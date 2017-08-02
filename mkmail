@@ -1,0 +1,22 @@
+#!/usr/bin/perl -w
+
+use v5.20;
+use Email::Simple;
+use Email::MessageID;
+
+my ($from,$to,$subj,$body) = @ARGV;
+
+my $email = Email::Simple->create(
+    header => [
+      From          => "<$from>",
+      'Reply-To'    => "<$from>",
+      'Return-Path' => "<$from>",
+      To            => $to,
+      Subject       => $subj,
+      'Message-ID'  => Email::MessageID->new->in_brackets,
+    ],
+    body => $body,
+);
+
+open OUT,"| msmtp -a $from $to";
+print OUT $email->as_string;

@@ -1,0 +1,112 @@
+#!/usr/bin/env dash
+
+set -eu
+
+is_positive_int()
+{
+    expr $1 : '^[0-9]\+$' > /dev/null
+}
+
+die()
+{
+    echo $1 > /dev/stderr
+    exit 1
+}
+
+usage()
+{
+    echo "usage: $0 -[w|x|y] <positive integer> -h"
+    echo ""
+    echo "         default"
+    echo " -w   |  1        |  moving window width"
+    echo " -x   |  1        |  column number for domain X"
+    echo " -y   |  2        |  column number for codomain Y"
+    echo " -h   |  --       |  print this usage message"
+    echo ""
+    echo " For the moving window width 'w', we have following convention:"
+    echo ""
+    echo "     i-w, .., i-2, i-1, i, i+1, i+2, ..., i+w"
+    echo ""
+    echo " Thus, the derivative reads"
+    echo ""
+    echo "     dY_i/dX_i = (dY_(i+w) - dY_(i-w)) / (dX_(i+w) - dX_(i-w))"
+    echo ""
+}
+
+i=0
+while [ $# -ne 0 ]
+do
+    i=$((i+1))
+
+    case "$1" in
+        -h|--help|--usage)
+            usage && exit 0
+            ;;
+        -w)
+            w=$2
+            is_positive_int $w || die "expected positive integer: '$1 $2' at position $i"
+            shift 2
+            ;;
+        -x)
+            x=$2
+            is_positive_int $x || die "expected positive integer: '$1 $2' at position $i"
+            shift 2
+            ;;
+        -y)
+            y=$2
+            is_positive_int $y || die "expected positive integer: '$1 $2' at position $i"
+            shift 2
+            ;;
+        *)
+            die "invalid option: '$1' at position $i"
+            ;;
+    esac
+done
+
+w=${w:-1}
+x=${x:-1}
+y=${y:-2}
+
+awk -v ww=$w -v xcol=$x -v ycol=$y \
+'
+BEGIN {
+    LB = lb != "" ? lb : -1
+    RB = rb != "" ? rb :  1
+
+    LB = ww != "" ? -ww : LB
+    RB = ww != "" ?  ww : RB
+
+    XCOL = xcol != "" ? xcol : 1
+    YCOL = ycol != "" ? ycol : 2
+}
+
+!/^[$|#]/ {
+    if (X[LB] != "" && 
+        X[RB] != "" && 
+        Y[LB] != "" && 
+        Y[RB] != "" ) {
+
+        x = X[0] 
+        y = Y[0] 
+
+        dy = Y[RB] - Y[LB]
+        dx = X[RB] - X[LB]
+
+        d = "NaN"
+        if (dx == 0) {
+            d = "Inf"
+        } else {
+            d = dy/dx
+        }
+
+        print x, y, d
+    }
+    
+    for (i = LB; i < RB; ++i) {
+        X[i] = X[i+1]
+        Y[i] = Y[i+1]
+    }
+
+    X[RB] = $XCOL
+    Y[RB] = $YCOL
+}'

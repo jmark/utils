@@ -1,0 +1,15 @@
+# read in file
+// {
+    X[NR] = $1
+    F[NR] = $2
+    G[NR] = $3
+}
+
+END {
+    sum = 0
+    for (phase = min; phase <= max; phase += step) {
+        for (x in X) {
+            sum += F[X]
+        }
+    }
+}
